@@ -1,10 +1,28 @@
----
-originRequest:
-  originServerName: "external.${SECRET_DOMAIN}"
+apiVersion: v1
+data:
+  config.yaml: |
+    ---
+    originRequest:
+      originServerName: "external.afamiljen.se"
 
-ingress:
-  - hostname: "${SECRET_DOMAIN}"
-    service: https://external-ingress-nginx-controller.network.svc.cluster.local:443
-  - hostname: "*.${SECRET_DOMAIN}"
-    service: https://external-ingress-nginx-controller.network.svc.cluster.local:443
-  - service: http_status:404
+    ingress:
+      - hostname: "afamiljen.se"
+        service: https://external-ingress-nginx-controller.network.svc.cluster.local:443
+      - hostname: "*.afamiljen.se"
+        service: https://external-ingress-nginx-controller.network.svc.cluster.local:443
+      - hostname: "ldit-host.se"
+        service: https://external-ingress-nginx-controller.network.svc.cluster.local:443
+      - hostname: "*.ldit-host.se"
+        service: https://external-ingress-nginx-controller.network.svc.cluster.local:443
+      - service: http_status:404
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2025-02-02T18:16:56Z"
+  labels:
+    app.kubernetes.io/name: cloudflared
+    kustomize.toolkit.fluxcd.io/name: cloudflared
+    kustomize.toolkit.fluxcd.io/namespace: flux-system
+  name: cloudflared-configmap
+  namespace: network
+  resourceVersion: "10566658"
+  uid: fa7831af-d21d-4315-8d25-9907ebbe0165
