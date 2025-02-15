@@ -1,52 +1,144 @@
----
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: &app external-dns
+  annotations:
+    deployment.kubernetes.io/revision: "12"
+    meta.helm.sh/release-name: external-dns
+    meta.helm.sh/release-namespace: network
+  creationTimestamp: "2025-02-02T18:16:01Z"
+  generation: 12
+  labels:
+    app.kubernetes.io/instance: external-dns
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: external-dns
+    app.kubernetes.io/version: 0.15.1
+    helm.sh/chart: external-dns-1.15.1
+    helm.toolkit.fluxcd.io/name: external-dns
+    helm.toolkit.fluxcd.io/namespace: network
+    k8slens-edit-resource-version: v1
+  name: external-dns
+  namespace: network
+  resourceVersion: "10568398"
+  uid: c33e59b9-ba11-45ea-8ab6-a813e9454eb3
 spec:
-  interval: 30m
-  chart:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/name: external-dns
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2025-02-04T18:52:54Z"
+        secret.reloader.stakater.com/reload: external-dns-secret
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/instance: external-dns
+        app.kubernetes.io/name: external-dns
     spec:
-      chart: external-dns
-      version: 1.15.1
-      sourceRef:
-        kind: HelmRepository
+      containers:
+      - args:
+        - --log-level=info
+        - --log-format=text
+        - --interval=1m
+        - --source=crd
+        - --source=ingress
+        - --policy=sync
+        - --registry=txt
+        - --txt-owner-id=default
+        - --txt-prefix=k8s.
+        - --domain-filter=afamiljen.se,ldit-host.se
+        - --provider=cloudflare
+        - --cloudflare-dns-records-per-page=1000
+        - --cloudflare-proxied
+        - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
+        - --crd-source-kind=DNSEndpoint
+        - --events
+        - --ignore-ingress-tls-spec
+        - --ingress-class=external
+        env:
+        - name: CF_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: api-token
+              name: external-dns-secret
+        image: registry.k8s.io/external-dns/external-dns:v0.15.1
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 2
+          httpGet:
+            path: /healthz
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         name: external-dns
-        namespace: flux-system
-  install:
-    crds: CreateReplace
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    crds: CreateReplace
-    remediation:
-      strategy: rollback
-      retries: 3
-  values:
-    fullnameOverride: *app
-    provider: cloudflare
-    env:
-      - name: CF_API_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: external-dns-secret
-            key: api-token
-    extraArgs:
-      - --cloudflare-dns-records-per-page=1000
-      - --cloudflare-proxied
-      - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
-      - --crd-source-kind=DNSEndpoint
-      - --events
-      - --ignore-ingress-tls-spec
-      - --ingress-class=external
-    policy: sync
-    sources: ["crd", "ingress"]
-    txtPrefix: k8s.
-    txtOwnerId: default
-    domainFilters: ["${SECRET_DOMAIN}"]
-    serviceMonitor:
-      enabled: true
-    podAnnotations:
-      secret.reloader.stakater.com/reload: external-dns-secret
+        ports:
+        - containerPort: 7979
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: /healthz
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsGroup: 65532
+          runAsNonRoot: true
+          runAsUser: 65532
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccount: external-dns
+      serviceAccountName: external-dns
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 2
+  conditions:
+  - lastTransitionTime: "2025-02-15T13:39:19Z"
+    lastUpdateTime: "2025-02-15T13:39:19Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2025-02-04T19:39:12Z"
+    lastUpdateTime: "2025-02-15T13:39:19Z"
+    message: ReplicaSet "external-dns-7b44f55c" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 12
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2
