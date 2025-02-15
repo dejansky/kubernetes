@@ -28,7 +28,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/d54d83ab30cf657c7d1ae700affedf0e4d0762faa4a5bf0c0392049a5fa4f20e
+    talosImageURL: factory.talos.dev/installer/941f6f168103ddd4a6a3233d0ba4f5db7c821192ed025ce8a8f9975d16b14873
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -45,9 +45,18 @@ nodes:
   - hostname: "ldit2"
     ipAddress: "192.168.20.21"
     installDisk: "/dev/sda"
+    machineDisks:
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/disk2
+    nodeLabels:
+        node.longhorn.io/create-default-disk: "config"
+    nodeAnnotations:
+        node.longhorn.io/default-disks-config: '[{"path":"/var/lib/longhorn","allowScheduling":true, "tags":["ssd", "fast"]},{name:"sdb","path":"var/mnt/disk2","allowScheduling":true,"storageReserved":1024,"tags":["ssd","fast"]}]'
+        node.longhorn.io/default-node-tags: '["fast", "storage"]'
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/d54d83ab30cf657c7d1ae700affedf0e4d0762faa4a5bf0c0392049a5fa4f20e
+    talosImageURL: factory.talos.dev/installer/941f6f168103ddd4a6a3233d0ba4f5db7c821192ed025ce8a8f9975d16b14873
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -66,7 +75,7 @@ nodes:
     installDisk: "/dev/nvme0n1"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/d54d83ab30cf657c7d1ae700affedf0e4d0762faa4a5bf0c0392049a5fa4f20e
+    talosImageURL: factory.talos.dev/installer/941f6f168103ddd4a6a3233d0ba4f5db7c821192ed025ce8a8f9975d16b14873
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -85,7 +94,7 @@ nodes:
     installDisk: "/dev/nvme0n1"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/d54d83ab30cf657c7d1ae700affedf0e4d0762faa4a5bf0c0392049a5fa4f20e
+    talosImageURL: factory.talos.dev/installer/941f6f168103ddd4a6a3233d0ba4f5db7c821192ed025ce8a8f9975d16b14873
     controlPlane: false
     networkInterfaces:
       - deviceSelector:
@@ -100,9 +109,21 @@ nodes:
   - hostname: "ldite3"
     ipAddress: "192.168.20.32"
     installDisk: "/dev/nvme0n1"
+    machineDisks:
+      - device: /dev/sda
+        partitions:
+          - mountpoint: /var/mnt/disk2
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/disk3
+    nodeLabels:
+        node.longhorn.io/create-default-disk: "config"
+    nodeAnnotations:
+        node.longhorn.io/default-disks-config: '[{"path":"/var/lib/longhorn","allowScheduling":true, "tags":["ssd", "fast"]},{name:"sda","path":"var/mnt/disk2","allowScheduling":true,"storageReserved":1024,"tags":["ssd","fast"]},{"path":"/var/lib/longhorn","allowScheduling":true, "tags":["ssd", "fast"]},{name:"sdb","path":"var/mnt/disk3","allowScheduling":true,"storageReserved":1024,"tags":["ssd","fast"]}]'
+        node.longhorn.io/default-node-tags: '["fast", "storage"]'
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/d54d83ab30cf657c7d1ae700affedf0e4d0762faa4a5bf0c0392049a5fa4f20e
+    talosImageURL: factory.talos.dev/installer/941f6f168103ddd4a6a3233d0ba4f5db7c821192ed025ce8a8f9975d16b14873
     controlPlane: false
     networkInterfaces:
       - deviceSelector:
@@ -117,9 +138,18 @@ nodes:
   - hostname: "lditdb"
     ipAddress: "192.168.20.50"
     installDisk: "/dev/sdb"
+    machineDisks:
+      - device: /dev/sda
+        partitions:
+          - mountpoint: /var/mnt/disk2
+    nodeLabels:
+        node.longhorn.io/create-default-disk: "config"
+    nodeAnnotations:
+        node.longhorn.io/default-disks-config: '[{"path":"/var/lib/longhorn","allowScheduling":true, "tags":["ssd", "fast"]},{name:"sda","path":"var/mnt/disk2","allowScheduling":true,"storageReserved":1024,"tags":["ssd","fast"]}]'
+        node.longhorn.io/default-node-tags: '["fast", "storage"]'
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/d54d83ab30cf657c7d1ae700affedf0e4d0762faa4a5bf0c0392049a5fa4f20e
+    talosImageURL: factory.talos.dev/installer/941f6f168103ddd4a6a3233d0ba4f5db7c821192ed025ce8a8f9975d16b14873
     controlPlane: false
     networkInterfaces:
       - deviceSelector:
